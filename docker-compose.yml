@@ -10,7 +10,4 @@ services:
     environment:
       - GENERIC_TIMEZONE=America/Sao_Paulo
     volumes:
-      - ./n8n-data:/home/node/.n8n
-
-volumes:
-  n8n_data:
+      - ./.n8n:/home/node/n8n
