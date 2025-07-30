@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   n8n:
+    build:
+      context: .
     image: n8nio/n8n:latest
     container_name: n8n_breno
     restart: unless-stopped
@@ -10,4 +12,4 @@ services:
     environment:
       - GENERIC_TIMEZONE=America/Sao_Paulo
     volumes:
-      - ./.n8n:/home/node/n8n
+      - ./.n8n:/home/node/.n8n
