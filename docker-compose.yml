@@ -11,5 +11,7 @@ services:
       - "5678:5678"
     environment:
       - GENERIC_TIMEZONE=America/Sao_Paulo
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
     volumes:
       - ./.n8n:/home/node/.n8n
