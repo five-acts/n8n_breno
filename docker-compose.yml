@@ -4,7 +4,7 @@ services:
   n8n:
     build:
       context: .
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:1.101.3
     container_name: n8n_breno
     restart: unless-stopped
     ports:
