@@ -7,8 +7,8 @@ services:
     image: n8nio/n8n:1.101.3
     container_name: n8n_breno
     restart: unless-stopped
-    ports:
-      - "5678:5678"
+    expose:
+      - "5678"
     environment:
       - GENERIC_TIMEZONE=America/Sao_Paulo
       - N8N_RUNNERS_ENABLED=true
