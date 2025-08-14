@@ -19,11 +19,8 @@ COPY .n8n/custom ./packages/nodes-community/
 RUN corepack enable
 RUN pnpm install
 
-# Fazer o bootstrap dos pacotes internos do n8n
-RUN npm run bootstrap
-
-# Compilar o n8n junto com o seu nó
-RUN npm run build
+# Compilar o n8n junto com o seu nó (usando pnpm)
+RUN pnpm run build
 
 
 # Etapa 2: Criar a imagem final de execução
