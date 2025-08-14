@@ -10,16 +10,18 @@ WORKDIR /usr/src/app
 ARG N8N_VERSION=1.101.3
 RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8n.git .
 
-# --- O PASSO MAIS IMPORTANTE E CORRIGIDO ---
 # Copia o seu código-fonte local para dentro da pasta de pacotes do n8n.
-# Garanta que o caminho ".n8n/custom" corresponde à estrutura no seu repositório.
 COPY .n8n/custom ./packages/nodes-community/
+
+# --- INÍCIO DA CORREÇÃO ---
+# Atualiza o NPM para a versão mais recente para entender o "workspace:*"
+RUN npm install -g npm@latest
+# --- FIM DA CORREÇÃO ---
 
 # Instalar todas as dependências do n8n
 RUN npm install
 
 # Fazer o bootstrap dos pacotes internos do n8n
-# Isso vai linkar todos os pacotes, incluindo o seu que acabamos de copiar.
 RUN npm run bootstrap
 
 # Compilar o n8n junto com o seu nó
