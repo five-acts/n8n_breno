@@ -1,6 +1,6 @@
 # Etapa 1: Construir o n8n a partir do código-fonte com o seu nó incluído
-# Usando a imagem base padrão do Node.js 18 para maior compatibilidade
-FROM node:18 AS builder
+# Usando a imagem base Node.js 20, conforme exigido pelo seu package.json
+FROM node:20 AS builder
 
 # Instalar dependências de sistema necessárias para a compilação
 RUN apt-get update && apt-get install -y --no-install-recommends git python3 make g++
@@ -8,15 +8,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends git python3 mak
 WORKDIR /usr/src/app
 
 # Clonar a versão exata do n8n que você quer usar
+# Nota: A versão 1.101.3 do n8n pode não ser 100% compatível com Node 20.
+# Se houver erros, talvez seja necessário usar uma versão mais recente do n8n.
 ARG N8N_VERSION=1.101.3
 RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8n.git .
 
 # Copia o seu código-fonte local para dentro da pasta de pacotes do n8n.
 COPY .n8n/custom ./packages/nodes-community/
 
-# --- A CORREÇÃO FINAL ---
-# Combina todos os comandos para garantir que o npm@10 seja usado pelo install
-RUN corepack enable && corepack prepare npm@10 --activate && npm install
+# Instalar todas as dependências do n8n
+RUN npm install
 
 # Fazer o bootstrap dos pacotes internos do n8n
 RUN npm run bootstrap
@@ -26,8 +27,8 @@ RUN npm run build
 
 
 # Etapa 2: Criar a imagem final de execução
-# Usando a imagem 'slim' que é menor que a padrão, mas mais robusta que a 'alpine'
-FROM node:18-slim
+# Usando a imagem 'slim' do Node 20
+FROM node:20-slim
 
 # Instalar dependências de produção que o n8n precisa
 RUN apt-get update && apt-get install -y --no-install-recommends graphicsmagick && rm -rf /var/lib/apt/lists/*
