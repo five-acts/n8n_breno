@@ -1,23 +1,48 @@
-# Começa da imagem base do n8n que você já usa
-FROM n8nio/n8n:1.101.3
+# Etapa 1: Construir o n8n a partir do código-fonte com o seu nó incluído
+FROM node:18-alpine AS builder
 
-# Muda para o usuário root para ter permissão de instalar pacotes
-USER root
+# Instalar dependências de sistema necessárias para a compilação
+RUN apk add --no-cache git python3 make g++
 
-# Instala o seu pacote de nó customizado globalmente
-RUN npm install -g n8n-nodes-databricksgenienode
+WORKDIR /usr/src/app
 
-# --- INÍCIO DA CORREÇÃO ---
-# Adiciona as variáveis de ambiente para que o n8n encontre e confie no nó
+# Clonar a versão exata do n8n que você quer usar
+ARG N8N_VERSION=1.101.3
+RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8n.git .
 
-# 1. Lista os pacotes externos que o n8n tem permissão para carregar.
-#    Se tiver mais de um, separe por vírgula.
-ENV NODE_FUNCTION_ALLOW_EXTERNAL=n8n-nodes-databricksgenienode
+# --- O PASSO MAIS IMPORTANTE E CORRIGIDO ---
+# Copia o seu código-fonte local para dentro da pasta de pacotes do n8n.
+# Garanta que o caminho ".n8n/custom" corresponde à estrutura no seu repositório.
+COPY .n8n/custom ./packages/nodes-community/
 
-# 2. Informa ao Node.js para procurar pacotes no diretório de instalação global.
-#    Este é o caminho padrão onde o `npm install -g` coloca os pacotes.
-ENV NODE_PATH=/usr/local/lib/node_modules
-# --- FIM DA CORREÇÃO ---
+# Instalar todas as dependências do n8n
+RUN npm install
 
-# Retorna para o usuário 'node' por segurança, para rodar a aplicação sem privilégios de root
-USER node
+# Fazer o bootstrap dos pacotes internos do n8n
+# Isso vai linkar todos os pacotes, incluindo o seu que acabamos de copiar.
+RUN npm run bootstrap
+
+# Compilar o n8n junto com o seu nó
+RUN npm run build
+
+
+# Etapa 2: Criar a imagem final de execução, que é menor e mais segura
+FROM node:18-alpine
+
+# Instalar dependências de produção que o n8n precisa
+RUN apk add --no-cache graphicsmagick
+
+WORKDIR /data
+
+# Copiar apenas os pacotes compilados da etapa de build
+COPY --from=builder /usr/src/app/packages ./packages
+
+# --- Variáveis de Ambiente ---
+# A única variável que precisamos para rodar no Coolify
+ENV N8N_TRUST_PROXY=true
+
+# Expor a porta padrão do n8n
+EXPOSE 5678
+
+# Definir o comando para iniciar o n8n
+ENTRYPOINT ["./packages/cli/bin/n8n"]
