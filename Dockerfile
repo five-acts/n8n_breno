@@ -14,8 +14,8 @@ RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8
 COPY .n8n/custom ./packages/nodes-community/
 
 # --- INÍCIO DA CORREÇÃO ---
-# Atualiza o NPM para a versão mais recente para entender o "workspace:*"
-RUN npm install -g npm@latest
+# Atualiza o NPM para a versão 10, que é compatível com Node.js 18
+RUN npm install -g npm@10
 # --- FIM DA CORREÇÃO ---
 
 # Instalar todas as dependências do n8n
