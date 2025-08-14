@@ -1,8 +1,10 @@
 # Etapa 1: Construir o n8n a partir do código-fonte com o seu nó incluído
-FROM node:18-alpine AS builder
+# Usando a imagem base padrão do Node.js 18 para maior compatibilidade
+FROM node:18 AS builder
 
 # Instalar dependências de sistema necessárias para a compilação
-RUN apk add --no-cache git python3 make g++
+# A imagem base Debian usa 'apt-get' em vez de 'apk'
+RUN apt-get update && apt-get install -y --no-install-recommends git python3 make g++
 
 WORKDIR /usr/src/app
 
@@ -14,9 +16,8 @@ RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8
 COPY .n8n/custom ./packages/nodes-community/
 
 # --- A CORREÇÃO FINAL ---
-# Força a instalação das dependências usando uma versão específica do npm (v9) via npx
-# Isso evita problemas de cache de ambiente e de versão do npm.
-RUN npx -p npm@9 -- npm install
+# Em um ambiente Debian estável, atualiza o NPM e executa o install na mesma camada.
+RUN npm install -g npm@10 && npm install
 
 # Fazer o bootstrap dos pacotes internos do n8n
 RUN npm run bootstrap
@@ -26,10 +27,11 @@ RUN npm run build
 
 
 # Etapa 2: Criar a imagem final de execução
-FROM node:18-alpine
+# Usando a imagem 'slim' que é menor que a padrão, mas mais robusta que a 'alpine'
+FROM node:18-slim
 
 # Instalar dependências de produção que o n8n precisa
-RUN apk add --no-cache graphicsmagick
+RUN apt-get update && apt-get install -y --no-install-recommends graphicsmagick && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /data
 
