@@ -8,16 +8,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends git python3 mak
 WORKDIR /usr/src/app
 
 # Clonar a versão exata do n8n que você quer usar
-# Nota: A versão 1.101.3 do n8n pode não ser 100% compatível com Node 20.
-# Se houver erros, talvez seja necessário usar uma versão mais recente do n8n.
 ARG N8N_VERSION=1.101.3
 RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8n.git .
 
 # Copia o seu código-fonte local para dentro da pasta de pacotes do n8n.
 COPY .n8n/custom ./packages/nodes-community/
 
-# Instalar todas as dependências do n8n
-RUN npm install
+# --- A CORREÇÃO FINAL ---
+# Habilita o corepack e instala as dependências usando pnpm, a ferramenta correta para o n8n
+RUN corepack enable
+RUN pnpm install
 
 # Fazer o bootstrap dos pacotes internos do n8n
 RUN npm run bootstrap
