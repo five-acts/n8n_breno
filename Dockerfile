@@ -14,12 +14,11 @@ RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8
 # Copia o seu código-fonte local para dentro da pasta de pacotes do n8n.
 COPY .n8n/custom ./packages/nodes-community/
 
-# --- A CORREÇÃO FINAL ---
-# Habilita o corepack e instala as dependências usando pnpm, a ferramenta correta para o n8n
+# Habilita o corepack e instala as dependências usando pnpm
 RUN corepack enable
 RUN pnpm install
 
-# Compilar o n8n junto com o seu nó (usando pnpm)
+# Compilar o n8n junto com o seu nó
 RUN pnpm run build
 
 
@@ -32,7 +31,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends graphicsmagick 
 
 WORKDIR /data
 
-# Copiar apenas os pacotes compilados da etapa de build
+# --- A CORREÇÃO FINAL ---
+# Copia o package.json e as dependências instaladas da etapa de build
+COPY --from=builder /usr/src/app/package.json ./package.json
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+# Copia os pacotes compilados da etapa de build
 COPY --from=builder /usr/src/app/packages ./packages
 
 # --- Variáveis de Ambiente ---
