@@ -15,12 +15,8 @@ RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8
 COPY .n8n/custom ./packages/nodes-community/
 
 # --- A CORREÇÃO FINAL ---
-# Usar Corepack para gerenciar a versão do NPM, que é o método moderno e mais robusto.
-RUN corepack enable
-RUN corepack prepare npm@10 --activate
-
-# Instalar todas as dependências do n8n (agora usando o npm@10 ativado pelo corepack)
-RUN npm install
+# Combina todos os comandos para garantir que o npm@10 seja usado pelo install
+RUN corepack enable && corepack prepare npm@10 --activate && npm install
 
 # Fazer o bootstrap dos pacotes internos do n8n
 RUN npm run bootstrap
