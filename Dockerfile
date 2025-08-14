@@ -3,7 +3,6 @@
 FROM node:18 AS builder
 
 # Instalar dependências de sistema necessárias para a compilação
-# A imagem base Debian usa 'apt-get' em vez de 'apk'
 RUN apt-get update && apt-get install -y --no-install-recommends git python3 make g++
 
 WORKDIR /usr/src/app
@@ -16,8 +15,12 @@ RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8
 COPY .n8n/custom ./packages/nodes-community/
 
 # --- A CORREÇÃO FINAL ---
-# Em um ambiente Debian estável, atualiza o NPM e executa o install na mesma camada.
-RUN npm install -g npm@10 && npm install
+# Usar Corepack para gerenciar a versão do NPM, que é o método moderno e mais robusto.
+RUN corepack enable
+RUN corepack prepare npm@10 --activate
+
+# Instalar todas as dependências do n8n (agora usando o npm@10 ativado pelo corepack)
+RUN npm install
 
 # Fazer o bootstrap dos pacotes internos do n8n
 RUN npm run bootstrap
