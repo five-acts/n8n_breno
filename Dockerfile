@@ -32,7 +32,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends graphicsmagick 
 WORKDIR /data
 
 # Git na instância
+USER root
 RUN apk add --no-cache git
+USER node
 
 # Copia os arquivos necessários da etapa de build
 COPY --from=builder /usr/src/app/package.json ./package.json
