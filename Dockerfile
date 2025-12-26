@@ -2,6 +2,9 @@
 # Usando a imagem base Node.js 20, conforme exigido pelo seu package.json
 FROM node:20 AS builder
 
+# Git na instância
+RUN apt-get update && apt-get install -y git
+
 # Instalar dependências de sistema necessárias para a compilação
 RUN apt-get update && apt-get install -y --no-install-recommends git python3 make g++
 
@@ -30,11 +33,6 @@ FROM node:20-slim
 RUN apt-get update && apt-get install -y --no-install-recommends graphicsmagick && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /data
-
-# Git na instância
-USER root
-RUN apk add --no-cache git
-USER node
 
 # Copia os arquivos necessários da etapa de build
 COPY --from=builder /usr/src/app/package.json ./package.json
