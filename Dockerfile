@@ -30,7 +30,13 @@ RUN pnpm run build
 FROM node:20-slim
 
 # Instalar dependências de produção que o n8n precisa
-RUN apt-get update && apt-get install -y --no-install-recommends graphicsmagick && rm -rf /var/lib/apt/lists/*
+# Instalar dependências de produção + git/ssh (necessários para Environments/Git do n8n)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    graphicsmagick \
+    git \
+    openssh-client \
+    ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /data
 
