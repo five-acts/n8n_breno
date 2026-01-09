@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git python3 mak
 WORKDIR /usr/src/app
 
 # Clonar a versão exata do n8n que você quer usar
-ARG N8N_VERSION=2.1.1
+ARG N8N_VERSION=2.2.4
 RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8n.git .
 
 # Copia o seu código-fonte local para dentro da pasta de pacotes do n8n.
