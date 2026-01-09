@@ -13,5 +13,6 @@ services:
       - GENERIC_TIMEZONE=America/Sao_Paulo
       - N8N_RUNNERS_ENABLED=true
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_ENCRYPTION_KEY=Ke/GIjRsMWv1RUZ6TyWQ63tdsT6ikm78
     volumes:
       - ./.n8n:/home/node/.n8n
