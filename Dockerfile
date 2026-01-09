@@ -50,6 +50,7 @@ ENV N8N_CUSTOM_EXTENSIONS='/data/packages/nodes-community/'
 
 # --- Variáveis de Ambiente ---
 ENV N8N_TRUST_PROXY=true
+ENV N8N_ENCRYPTION_KEY="c7BeP9{Yq^5%q[8,A1)]]d!I9P0qfLy*"
 
 # Expor a porta padrão do n8n
 EXPOSE 5678
