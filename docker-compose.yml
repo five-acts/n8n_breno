@@ -5,7 +5,7 @@ services:
     build:
       context: .
     image: n8nio/n8n:2.2.4
-    container_name: n8n_breno
+    container_name: n8n-coolify
     restart: unless-stopped
     ports:
       - "5678:5678"
