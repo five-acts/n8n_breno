@@ -1,6 +1,6 @@
 # Etapa 1: Construir o n8n a partir do código-fonte com o seu nó incluído
 # Usando a imagem base Node.js 20, conforme exigido pelo seu package.json
-FROM node:20 AS builder
+FROM node:22 AS builder
 
 # Git na instância
 RUN apt-get update && apt-get install -y git
@@ -27,7 +27,7 @@ RUN pnpm run build
 
 # Etapa 2: Criar a imagem final de execução
 # Usando a imagem 'slim' do Node 20
-FROM node:20-slim
+FROM node:22-slim
 
 # Instalar dependências de produção que o n8n precisa
 # Instalar dependências de produção + git/ssh (necessários para Environments/Git do n8n)
