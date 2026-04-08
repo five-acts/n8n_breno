@@ -1,6 +1,6 @@
 # Etapa 1: Construir o n8n a partir do código-fonte com o seu nó incluído
 # Usando a imagem base Node.js 20, conforme exigido pelo seu package.json
-FROM node:22 AS builder
+FROM node:20 AS builder
 
 # Git na instância
 RUN apt-get update && apt-get install -y git
@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends git python3 mak
 WORKDIR /usr/src/app
 
 # Clonar a versão exata do n8n que você quer usar
-ARG N8N_VERSION=2.16.0
+ARG N8N_VERSION=2.2.4
 RUN git clone --depth 1 --branch n8n@${N8N_VERSION} https://github.com/n8n-io/n8n.git .
 
 # Copia o seu código-fonte local para dentro da pasta de pacotes do n8n.
@@ -27,7 +27,7 @@ RUN pnpm run build
 
 # Etapa 2: Criar a imagem final de execução
 # Usando a imagem 'slim' do Node 20
-FROM node:22-slim
+FROM node:20-slim
 
 # Instalar dependências de produção que o n8n precisa
 # Instalar dependências de produção + git/ssh (necessários para Environments/Git do n8n)
